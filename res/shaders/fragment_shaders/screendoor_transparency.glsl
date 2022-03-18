@@ -32,7 +32,7 @@ void main() {
 	vec3 normal = normalize(inNormal);
 
 	// Use the lighting calculation that we included from our partial file
-	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess);
+	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess,u_Toggle);
 
 
 	// combine for the final result

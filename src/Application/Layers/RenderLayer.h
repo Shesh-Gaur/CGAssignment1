@@ -2,7 +2,8 @@
 #include "../ApplicationLayer.h"
 #include "Graphics/Framebuffer.h"
 #include "Graphics/Buffers/UniformBuffer.h"
-
+#include "Graphics/Textures/Texture3D.h"
+#include "Graphics/Textures/Texture1D.h"
 ENUM_FLAGS(RenderFlags, uint32_t,
 	None = 0,
 	EnableColorCorrection = 1 << 0
@@ -10,7 +11,7 @@ ENUM_FLAGS(RenderFlags, uint32_t,
 
 class RenderLayer final : public ApplicationLayer {
 public:
-	MAKE_PTRS(RenderLayer); 
+	MAKE_PTRS(RenderLayer);
 
 	// Structure for our frame-level uniforms, matches layout from
 	// fragments/frame_uniforms.glsl
@@ -30,6 +31,7 @@ public:
 		float u_DeltaTime;
 		// Bitfield representing up to 32 bool values to enable/disable stuff
 		RenderFlags u_RenderFlags;
+		int u_Toggle;
 	};
 
 	// Structure for our instance-level uniforms, matches layout from
@@ -68,11 +70,18 @@ public:
 	virtual void OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& newSize) override;
 	virtual Framebuffer::Sptr GetRenderOutput() override;
 
+	// Loading in a color lookup table
+	Texture3D::Sptr coolLut;
+	Texture3D::Sptr warmLut;
+	Texture3D::Sptr weirdLut;
+
 protected:
 	Framebuffer::Sptr _primaryFBO;
 	bool              _blitFbo;
 	glm::vec4         _clearColor;
 	RenderFlags       _renderFlags;
+
+	int toggle = 0;
 
 	const int FRAME_UBO_BINDING = 0;
 	UniformBuffer<FrameLevelUniforms>::Sptr _frameUniforms;

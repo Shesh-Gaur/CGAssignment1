@@ -44,7 +44,7 @@ void main() {
 
 	// Will accumulate the contributions of all lights on this fragment
 	// This is defined in the fragment file "multiple_point_lights.glsl"
-	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess);
+	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess,u_Toggle);
 
     // By we can use this lil trick to divide our weight by the sum of all components
     // This will make all of our texture weights add up to one! 

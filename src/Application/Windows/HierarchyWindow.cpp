@@ -6,9 +6,9 @@
 HierarchyWindow::HierarchyWindow() :
 	IEditorWindow()
 {
-	Name           = "Hierarchy";
+	Name = "Hierarchy";
 	SplitDirection = ImGuiDir_::ImGuiDir_Right;
-	SplitDepth     = 0.2f;
+	SplitDepth = 0.2f;
 }
 
 HierarchyWindow::~HierarchyWindow() = default;
@@ -25,9 +25,26 @@ void HierarchyWindow::Render()
 
 		ImGui::EndPopup();
 	}
-	
+
 	for (const auto& object : app.CurrentScene()->_objects) {
 		_RenderObjectNode(object);
+	}
+
+	ImGui::Separator();
+	ImGui::LabelText("", "Lights");
+	for (int ix = 0; ix < app.CurrentScene()->Lights.size(); ix++) {
+		char buff[256];
+		sprintf_s(buff, "Light %d##%d", ix, ix);
+
+		Gameplay::Light& light = app.CurrentScene()->Lights[ix];
+
+		ImGui::PushID(&light); // We can also use pointers as numbers for unique IDs
+		if (ImGui::CollapsingHeader(buff)) {
+			ImGui::DragFloat3("Pos", &app.CurrentScene()->Lights[ix].Position.x, 0.01f);
+			ImGui::ColorEdit3("Col", &app.CurrentScene()->Lights[ix].Color.r);
+			ImGui::DragFloat("Range", &app.CurrentScene()->Lights[ix].Range, 0.1f);
+		}
+		ImGui::PopID();
 	}
 }
 
@@ -95,7 +112,7 @@ void HierarchyWindow::_RenderObjectNode(Gameplay::GameObject::Sptr object, int d
 			if (ImGui::MenuItem(buffer, nullptr, nullptr, !object->Has(type))) {
 				object->Add(type);
 			}
-		});
+			});
 
 		ImGui::EndPopup();
 	}

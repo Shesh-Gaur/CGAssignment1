@@ -53,7 +53,7 @@ vec3 SampleEnvironmentMap(vec3 normal) {
 // @param viewDir   Direction between camera and fragment
 // @param Light     The light to caluclate the contribution for
 // @param shininess The specular power for the fragment, between 0 and 1
-vec3 CalcPointLightContribution(vec3 worldPos, vec3 normal, vec3 viewDir, Light light, float shininess) {
+vec3 CalcPointLightContribution(vec3 worldPos, vec3 normal, vec3 viewDir, Light light, float shininess, int toggle) {
 	// Get the direction to the light in world space
 	vec3 toLight = light.Position.xyz - worldPos;
 	// Get distance between fragment and light
@@ -78,7 +78,41 @@ vec3 CalcPointLightContribution(vec3 worldPos, vec3 normal, vec3 viewDir, Light 
 	// We add the one to prevent divide by zero errors
 	float attenuation = clamp(1.0 / (1.0 + light.ColorAttenuation.w * pow(dist, 2)), 0, 1);
 
-	return (diffuseOut + specularOut) * attenuation;
+	switch (toggle)
+	{
+		case 0: //no lighting
+			return (vec3(0.5));
+			break;
+		case 1: //ambient
+			return (diffuseOut) * attenuation;
+			break; 
+		case 2: //spec
+			return (specularOut) * attenuation;
+			break;
+		case 3: //ambient + spec
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 4: //ambient + spec + custom effect
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 5: //diffuse ramp
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 6: //specular ramp
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 7: //ambient + spec + custom effect
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 8: //diffuse ramp
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+		case 9: //specular ramp
+			return (diffuseOut + specularOut) * attenuation;
+			break;
+	}
+		
+
 }
 
 /*
@@ -88,7 +122,7 @@ vec3 CalcPointLightContribution(vec3 worldPos, vec3 normal, vec3 viewDir, Light 
  * @param normal The normalized surface normal for the fragment
  * @param camPos The camera's position in world space
 */
-vec3 CalcAllLightContribution(vec3 worldPos, vec3 normal, vec3 camPos, float shininess) {
+vec3 CalcAllLightContribution(vec3 worldPos, vec3 normal, vec3 camPos, float shininess, int toggle) {
     // Will accumulate the contributions of all lights on this fragment
 	vec3 lightAccumulation = AmbientColAndNumLights.rgb;
 
@@ -98,7 +132,7 @@ vec3 CalcAllLightContribution(vec3 worldPos, vec3 normal, vec3 camPos, float shi
 	// Iterate over all lights
 	for(int ix = 0; ix < AmbientColAndNumLights.w && ix < MAX_LIGHTS; ix++) {
 		// Additive lighting model
-		lightAccumulation += CalcPointLightContribution(worldPos, normal, viewDir, Lights[ix], shininess);
+		lightAccumulation += CalcPointLightContribution(worldPos, normal, viewDir, Lights[ix], shininess, toggle);
 	}
 
 	return lightAccumulation;

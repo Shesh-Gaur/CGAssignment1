@@ -14,6 +14,8 @@ layout (std140, binding = 0) uniform b_FrameLevelUniforms {
     uniform float u_DeltaTime;
     // Lets us store up to 32 bool flags in one value
     uniform uint  u_Flags;
+
+    uniform int  u_Toggle;
 };
 
 // Stores uniforms that change every object/instance

@@ -45,7 +45,7 @@ void main() {
 	vec3 reflected = SampleEnvironmentMap(environmentDir);
 
 	// Use the lighting calculation that we included from our partial file
-	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, specPower);
+	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, specPower,u_Toggle);
 
 	// Get the albedo from the diffuse / albedo map
 	vec4 textureColor = texture(u_Material.Diffuse, inUV);

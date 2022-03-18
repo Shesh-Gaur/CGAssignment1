@@ -50,7 +50,7 @@ void main() {
 
 	// Will accumulate the contributions of all lights on this fragment
 	// This is defined in the fragment file "multiple_point_lights.glsl"
-	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess);
+	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, u_Material.Shininess,u_Toggle);
 
 	// Get the albedo from the diffuse / albedo map
 	vec4 textureColor = texture(u_Material.Diffuse, inUV);

@@ -7,14 +7,14 @@
 #include "../Timing.h"
 #include "Gameplay/Components/ComponentManager.h"
 #include "Gameplay/Components/RenderComponent.h"
-
+#include <GLFW/glfw3.h>
 // GLM math library
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/common.hpp> // for fmod (floating modulus)
-
+#include "Utils/ResourceManager/ResourceManager.h"
 
 RenderLayer::RenderLayer() :
 	ApplicationLayer(),
@@ -31,7 +31,7 @@ RenderLayer::RenderLayer() :
 
 RenderLayer::~RenderLayer() = default;
 
-void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
+void RenderLayer::OnRender(const Framebuffer::Sptr & prevLayer)
 {
 	using namespace Gameplay;
 
@@ -56,6 +56,8 @@ void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 	// Make sure depth testing and culling are re-enabled
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+	app.CurrentScene()->SetupShaderAndLights(); //Recalculates lighting every frame
 
 	// The current material that is bound for rendering
 	Material::Sptr currentMat = nullptr;
@@ -91,6 +93,42 @@ void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 	frameData.u_Time = static_cast<float>(Timing::Current().TimeSinceSceneLoad());
 	frameData.u_DeltaTime = Timing::Current().DeltaTime();
 	frameData.u_RenderFlags = _renderFlags;
+
+	//Toggles
+	if (glfwGetKey(app.GetWindow(), GLFW_KEY_1)) {
+		frameData.u_Toggle = 0;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_2)) {
+		frameData.u_Toggle = 1;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_3)) {
+		frameData.u_Toggle = 2;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_4)) {
+		frameData.u_Toggle = 3;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_5)) {
+		frameData.u_Toggle = 4;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_6)) {
+		frameData.u_Toggle = 5;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_7)) {
+		frameData.u_Toggle = 6;
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_8)) {
+		frameData.u_Toggle = 7;
+		app.CurrentScene()->SetColorLUT(warmLut);
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_9)) {
+		frameData.u_Toggle = 8;
+		app.CurrentScene()->SetColorLUT(coolLut);
+	}
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_0)) {
+		frameData.u_Toggle = 9;
+		app.CurrentScene()->SetColorLUT(weirdLut);
+	}
+
 	_frameUniforms->Update();
 
 	Material::Sptr defaultMat = app.CurrentScene()->DefaultMaterial;
@@ -107,7 +145,8 @@ void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 		if (renderable->GetMaterial() == nullptr) {
 			if (defaultMat != nullptr) {
 				renderable->SetMaterial(defaultMat);
-			} else {
+			}
+			else {
 				return;
 			}
 		}
@@ -134,7 +173,7 @@ void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 
 		// Draw the object
 		renderable->GetMesh()->Draw();
-	});
+		});
 
 	// Use our cubemap to draw our skybox
 	app.CurrentScene()->DrawSkybox();
@@ -145,7 +184,7 @@ void RenderLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 	VertexArrayObject::Unbind();
 }
 
-void RenderLayer::OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& newSize)
+void RenderLayer::OnWindowResize(const glm::ivec2 & oldSize, const glm::ivec2 & newSize)
 {
 	if (newSize.x * newSize.y == 0) return;
 
@@ -157,7 +196,7 @@ void RenderLayer::OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& ne
 	app.CurrentScene()->MainCamera->ResizeWindow(newSize.x, newSize.y);
 }
 
-void RenderLayer::OnAppLoad(const nlohmann::json& config)
+void RenderLayer::OnAppLoad(const nlohmann::json & config)
 {
 	Application& app = Application::Get();
 
@@ -174,8 +213,8 @@ void RenderLayer::OnAppLoad(const nlohmann::json& config)
 	fboDescriptor.SampleCount = 1;
 
 	// Add a depth and color attachment (same as default)
-	fboDescriptor.RenderTargets[RenderTargetAttachment::DepthStencil] ={ true, RenderTargetType::DepthStencil };
-	fboDescriptor.RenderTargets[RenderTargetAttachment::Color0] ={ true, RenderTargetType::ColorRgb8 };
+	fboDescriptor.RenderTargets[RenderTargetAttachment::DepthStencil] = { true, RenderTargetType::DepthStencil };
+	fboDescriptor.RenderTargets[RenderTargetAttachment::Color0] = { true, RenderTargetType::ColorRgb8 };
 
 	// Create the primary FBO
 	_primaryFBO = std::make_shared<Framebuffer>(fboDescriptor);
@@ -183,6 +222,10 @@ void RenderLayer::OnAppLoad(const nlohmann::json& config)
 	// Create our common uniform buffers
 	_frameUniforms = std::make_shared<UniformBuffer<FrameLevelUniforms>>(BufferUsage::DynamicDraw);
 	_instanceUniforms = std::make_shared<UniformBuffer<InstanceLevelUniforms>>(BufferUsage::DynamicDraw);
+
+	coolLut = ResourceManager::CreateAsset<Texture3D>("luts/CoolLookUp.cube");
+	warmLut = ResourceManager::CreateAsset<Texture3D>("luts/WarmLookUp.CUBE");
+	weirdLut = ResourceManager::CreateAsset<Texture3D>("luts/PurpleGreenLookUp.cube");
 }
 
 const Framebuffer::Sptr& RenderLayer::GetPrimaryFBO() const {

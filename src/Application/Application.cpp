@@ -66,7 +66,7 @@ std::string Application::_applicationName = "INFR-2350U - DEMO";
 
 Application::Application() :
 	_window(nullptr),
-	_windowSize({DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}),
+	_windowSize({ DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }),
 	_isRunning(false),
 	_isEditor(true),
 	_windowTitle("INFR - 2350U"),
@@ -75,7 +75,7 @@ Application::Application() :
 	_renderOutput(nullptr)
 { }
 
-Application::~Application() = default; 
+Application::~Application() = default;
 
 Application& Application::Get() {
 	LOG_ASSERT(_singleton != nullptr, "Failed to get application! Get was called before the application was started!");
@@ -97,11 +97,11 @@ const glm::uvec4& Application::GetPrimaryViewport() const {
 	return _primaryViewport;
 }
 
-void Application::SetPrimaryViewport(const glm::uvec4& value) {
+void Application::SetPrimaryViewport(const glm::uvec4 & value) {
 	_primaryViewport = value;
 }
 
-void Application::ResizeWindow(const glm::ivec2& newSize)
+void Application::ResizeWindow(const glm::ivec2 & newSize)
 {
 	_HandleWindowSizeChanged(newSize);
 }
@@ -110,8 +110,8 @@ void Application::Quit() {
 	_isRunning = false;
 }
 
-bool Application::LoadScene(const std::string& path) {
-	if (std::filesystem::exists(path)) { 
+bool Application::LoadScene(const std::string & path) {
+	if (std::filesystem::exists(path)) {
 
 		std::string manifestPath = std::filesystem::path(path).stem().string() + "-manifest.json";
 		if (std::filesystem::exists(manifestPath)) {
@@ -126,7 +126,7 @@ bool Application::LoadScene(const std::string& path) {
 	return false;
 }
 
-void Application::LoadScene(const Gameplay::Scene::Sptr& scene) {
+void Application::LoadScene(const Gameplay::Scene::Sptr & scene) {
 	_targetScene = scene;
 }
 
@@ -176,7 +176,7 @@ void Application::_Run()
 	_Load();
 
 	// Grab current time as the previous frame
-	double lastFrame =  glfwGetTime();
+	double lastFrame = glfwGetTime();
 
 	// Done loading, app is now running!
 	_isRunning = true;
@@ -219,7 +219,7 @@ void Application::_Run()
 			_Update();
 			_LateUpdate();
 			_PreRender();
-			_RenderScene(); 
+			_RenderScene();
 			_PostRender();
 		}
 
@@ -281,7 +281,7 @@ void Application::_Load() {
 
 	// Pass the window to the input engine and let it initialize itself
 	InputEngine::Init(_window);
-	
+
 	// Initialize our ImGui helper
 	ImGuiHelper::Init(_window);
 
@@ -306,7 +306,7 @@ void Application::_LateUpdate() {
 
 void Application::_PreRender()
 {
-	glm::ivec2 size ={ 0, 0 };
+	glm::ivec2 size = { 0, 0 };
 	glfwGetWindowSize(_window, &size.x, &size.y);
 	glViewport(0, 0, size.x, size.y);
 	glScissor(0, 0, size.x, size.y);
@@ -327,7 +327,7 @@ void Application::_RenderScene() {
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnRender)) {
 			layer->OnRender(result);
-			Framebuffer::Sptr layerResult = layer->GetRenderOutput(); 
+			Framebuffer::Sptr layerResult = layer->GetRenderOutput();
 			result = layerResult != nullptr ? layerResult : result;
 		}
 	}
@@ -349,7 +349,7 @@ void Application::_PostRender() {
 	// We can use the application's viewport to set our OpenGL viewport, as well as clip rendering to that area
 	const glm::uvec4& viewport = GetPrimaryViewport();
 	glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-	glScissor(viewport.x, viewport.y, viewport.z, viewport.w); 
+	glScissor(viewport.x, viewport.y, viewport.z, viewport.w);
 
 	// If we have a final output, blit it to the screen
 	if (_renderOutput != nullptr) {
@@ -360,7 +360,7 @@ void Application::_PostRender() {
 			glfwGetWindowSize(_window, &windowSize.x, &windowSize.y);
 		}
 		//glViewport(0, 0, windowSize.x, windowSize.y);
-		glm::ivec4 viewportMinMax ={ viewport.x, viewport.y, viewport.x + viewport.z, viewport.y + viewport.w };
+		glm::ivec4 viewportMinMax = { viewport.x, viewport.y, viewport.x + viewport.z, viewport.y + viewport.w };
 
 		_renderOutput->Bind(FramebufferBinding::Read);
 		glBindFramebuffer(*FramebufferBinding::Write, 0);
@@ -394,7 +394,7 @@ void Application::_HandleSceneChange() {
 	}
 
 	_currentScene = _targetScene;
-	
+
 	// Let the layers know that we've loaded in a new scene
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnSceneLoad)) {
@@ -413,7 +413,7 @@ void Application::_HandleSceneChange() {
 	_targetScene = nullptr;
 }
 
-void Application::_HandleWindowSizeChanged(const glm::ivec2& newSize) {
+void Application::_HandleWindowSizeChanged(const glm::ivec2 & newSize) {
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnWindowResize)) {
 			layer->OnWindowResize(_windowSize, newSize);
@@ -448,7 +448,7 @@ void Application::_ConfigureSettings() {
 
 nlohmann::json Application::_GetDefaultAppSettings()
 {
-	nlohmann::json result ={};
+	nlohmann::json result = {};
 
 	for (const auto& layer : _layers) {
 		if (!layer->Name.empty()) {
@@ -460,7 +460,7 @@ nlohmann::json Application::_GetDefaultAppSettings()
 		}
 	}
 
-	result["window_width"]  = DEFAULT_WINDOW_WIDTH;
+	result["window_width"] = DEFAULT_WINDOW_WIDTH;
 	result["window_height"] = DEFAULT_WINDOW_HEIGHT;
 	return result;
 }
