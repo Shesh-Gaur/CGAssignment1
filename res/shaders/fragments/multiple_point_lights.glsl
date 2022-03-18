@@ -81,38 +81,23 @@ vec3 CalcPointLightContribution(vec3 worldPos, vec3 normal, vec3 viewDir, Light 
 	switch (toggle)
 	{
 		case 0: //no lighting
-			return (vec3(0.5));
+			return (vec3(1.0));
 			break;
 		case 1: //ambient
-			return (diffuseOut) * attenuation;
+			specularOut = vec3(0.0);
 			break; 
 		case 2: //spec
-			return (specularOut) * attenuation;
+			diffuseOut = vec3(0.0);
 			break;
-		case 3: //ambient + spec
-			return (diffuseOut + specularOut) * attenuation;
+		case 5: //diffuse ramp (cubic)
+			diffuseOut = diffuseOut * diffuseOut * diffuseOut;
 			break;
-		case 4: //ambient + spec + custom effect
-			return (diffuseOut + specularOut) * attenuation;
-			break;
-		case 5: //diffuse ramp
-			return (diffuseOut + specularOut) * attenuation;
-			break;
-		case 6: //specular ramp
-			return (diffuseOut + specularOut) * attenuation;
-			break;
-		case 7: //ambient + spec + custom effect
-			return (diffuseOut + specularOut) * attenuation;
-			break;
-		case 8: //diffuse ramp
-			return (diffuseOut + specularOut) * attenuation;
-			break;
-		case 9: //specular ramp
-			return (diffuseOut + specularOut) * attenuation;
+		case 6: //specular ramp (cubic)
+			specularOut = specularOut * specularOut * specularOut;
 			break;
 	}
 		
-
+	return (diffuseOut + specularOut) * attenuation;
 }
 
 /*

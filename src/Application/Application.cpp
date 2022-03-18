@@ -68,7 +68,7 @@ Application::Application() :
 	_window(nullptr),
 	_windowSize({ DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }),
 	_isRunning(false),
-	_isEditor(true),
+	_isEditor(false),
 	_windowTitle("INFR - 2350U"),
 	_currentScene(nullptr),
 	_targetScene(nullptr),
@@ -149,7 +149,7 @@ void Application::_Run()
 	_layers.push_back(std::make_shared<DefaultSceneLayer>());
 	_layers.push_back(std::make_shared<LogicUpdateLayer>());
 	_layers.push_back(std::make_shared<RenderLayer>());
-	_layers.push_back(std::make_shared<ParticleLayer>());
+	//_layers.push_back(std::make_shared<ParticleLayer>());
 	//_layers.push_back(std::make_shared<InstancedRenderingTestLayer>());
 	_layers.push_back(std::make_shared<InterfaceLayer>());
 

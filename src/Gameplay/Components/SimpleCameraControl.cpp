@@ -13,8 +13,8 @@
 SimpleCameraControl::SimpleCameraControl() :
 	IComponent(),
 	_mouseSensitivity({ 0.5f, 0.3f }),
-	_moveSpeeds(glm::vec3(1.0f)),
-	_shiftMultipler(2.0f),
+	_moveSpeeds(glm::vec3(2.0f)),
+	_shiftMultipler(4.0f),
 	_currentRot(glm::vec2(0.0f)),
 	_isMousePressed(false)
 { }
@@ -79,7 +79,7 @@ void SimpleCameraControl::RenderImGui()
 {
 	LABEL_LEFT(ImGui::DragFloat2, "Mouse Sensitivity", &_mouseSensitivity.x, 0.01f);
 	LABEL_LEFT(ImGui::DragFloat3, "Move Speed       ", &_moveSpeeds.x, 0.01f, 0.01f);
-	LABEL_LEFT(ImGui::DragFloat , "Shift Multiplier ", &_shiftMultipler, 0.01f, 1.0f);
+	LABEL_LEFT(ImGui::DragFloat, "Shift Multiplier ", &_shiftMultipler, 0.01f, 1.0f);
 }
 
 nlohmann::json SimpleCameraControl::ToJson() const {
@@ -90,10 +90,10 @@ nlohmann::json SimpleCameraControl::ToJson() const {
 	};
 }
 
-SimpleCameraControl::Sptr SimpleCameraControl::FromJson(const nlohmann::json& blob) {
+SimpleCameraControl::Sptr SimpleCameraControl::FromJson(const nlohmann::json & blob) {
 	SimpleCameraControl::Sptr result = std::make_shared<SimpleCameraControl>();
 	result->_mouseSensitivity = JsonGet(blob, "mouse_sensitivity", result->_mouseSensitivity);
-	result->_moveSpeeds       = JsonGet(blob, "move_speed", result->_moveSpeeds);
-	result->_shiftMultipler   = JsonGet(blob, "shift_mult", 2.0f);
+	result->_moveSpeeds = JsonGet(blob, "move_speed", result->_moveSpeeds);
+	result->_shiftMultipler = JsonGet(blob, "shift_mult", 2.0f);
 	return result;
 }

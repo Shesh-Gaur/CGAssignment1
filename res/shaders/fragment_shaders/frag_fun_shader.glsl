@@ -29,22 +29,31 @@ uniform Material u_Material;
 /////////////// Frame Level Uniforms ///////////////////////////
 ////////////////////////////////////////////////////////////////
 
-#include "../fragments/frame_uniforms.glsl"
+
+#include "../fragments/color_correction.glsl"
 
 
 // https://learnopengl.com/Advanced-Lighting/Advanced-Lighting
 void main() {
 
-	vec3 normal = normalize(inNormal);
-	float scaledTime = u_Time * 0.1;
+	if (u_Toggle >= 4)
+	{
+		vec3 normal = normalize(inNormal);
+		float scaledTime = u_Time * 0.1;
+		vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, 0, u_Toggle);
+		vec4 textureColor = texture(u_Material.Diffuse, inUV + scaledTime);
+		vec3 newColor = vec3(1,0,1);
+		vec3 result = lightAccumulation  * inColor * textureColor.rgb * newColor ;
+		frag_color = vec4(ColorCorrect(result), textureColor.a);
 
-	vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, 0, u_Toggle);
-
-
-	vec4 textureColor = texture(u_Material.Diffuse, inUV + scaledTime);
-	vec3 newColor = vec3(1,0,1);
-	
-	vec3 result = lightAccumulation  * inColor * textureColor.rgb * newColor ;
-
-	frag_color = vec4(result, textureColor.a);
+	}
+	else
+	{
+		vec3 normal = normalize(inNormal);
+		vec3 lightAccumulation = CalcAllLightContribution(inWorldPos, normal, u_CamPos.xyz, 0, u_Toggle);
+		vec4 textureColor = texture(u_Material.Diffuse, inUV);
+		vec3 newColor = vec3(1,0,1);	
+		vec3 result = lightAccumulation  * inColor * textureColor.rgb * newColor;
+		frag_color = vec4(ColorCorrect(result), textureColor.a);
+	}
 }

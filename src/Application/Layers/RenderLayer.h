@@ -31,7 +31,7 @@ public:
 		float u_DeltaTime;
 		// Bitfield representing up to 32 bool values to enable/disable stuff
 		RenderFlags u_RenderFlags;
-		int u_Toggle;
+		int u_Toggle = 13;
 	};
 
 	// Structure for our instance-level uniforms, matches layout from
@@ -81,8 +81,10 @@ protected:
 	glm::vec4         _clearColor;
 	RenderFlags       _renderFlags;
 
-	int toggle = 0;
-
+	int toggle = 0, prevToggle = 0;
+	bool lutToggle;
+	bool isKeyPressed = false;
+	bool diffuseRampToggle, specularRampToggle;
 	const int FRAME_UBO_BINDING = 0;
 	UniformBuffer<FrameLevelUniforms>::Sptr _frameUniforms;
 

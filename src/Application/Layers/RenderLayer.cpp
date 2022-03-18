@@ -92,42 +92,117 @@ void RenderLayer::OnRender(const Framebuffer::Sptr & prevLayer)
 	frameData.u_CameraPos = glm::vec4(camera->GetGameObject()->GetPosition(), 1.0f);
 	frameData.u_Time = static_cast<float>(Timing::Current().TimeSinceSceneLoad());
 	frameData.u_DeltaTime = Timing::Current().DeltaTime();
-	frameData.u_RenderFlags = _renderFlags;
+	//frameData.u_RenderFlags = _renderFlags;
+	if (toggle == 13)
+		frameData.u_RenderFlags = RenderFlags::None;
 
 	//Toggles
 	if (glfwGetKey(app.GetWindow(), GLFW_KEY_1)) {
+		isKeyPressed = true;
 		frameData.u_Toggle = 0;
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_2)) {
+		isKeyPressed = true;
 		frameData.u_Toggle = 1;
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_3)) {
+		isKeyPressed = true;
 		frameData.u_Toggle = 2;
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_4)) {
+		isKeyPressed = true;
 		frameData.u_Toggle = 3;
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_5)) {
+		isKeyPressed = true;
 		frameData.u_Toggle = 4;
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_6)) {
-		frameData.u_Toggle = 5;
+		if (!isKeyPressed)
+		{
+			isKeyPressed = true;
+			diffuseRampToggle = !diffuseRampToggle;
+			if (diffuseRampToggle)
+				frameData.u_Toggle = 5;
+			else
+				frameData.u_Toggle = 10;
+		}
 	}
 	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_7)) {
-		frameData.u_Toggle = 6;
+		if (!isKeyPressed)
+		{
+			isKeyPressed = true;
+			specularRampToggle = !specularRampToggle;
+			if (specularRampToggle)
+				frameData.u_Toggle = 6;
+			else
+				frameData.u_Toggle = 11;
+		}
 	}
-	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_8)) {
-		frameData.u_Toggle = 7;
-		app.CurrentScene()->SetColorLUT(warmLut);
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_8))
+	{
+		if (!isKeyPressed)
+		{
+			isKeyPressed = true;
+			frameData.u_Toggle = 7;
+
+			if (frameData.u_Toggle != prevToggle)
+				lutToggle = false;
+
+			lutToggle = !lutToggle;
+			app.CurrentScene()->SetColorLUT(warmLut);
+
+			if (lutToggle)
+				frameData.u_RenderFlags = RenderFlags::EnableColorCorrection;
+			else
+				frameData.u_RenderFlags = RenderFlags::None;
+		}
 	}
-	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_9)) {
-		frameData.u_Toggle = 8;
-		app.CurrentScene()->SetColorLUT(coolLut);
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_9))
+	{
+		if (!isKeyPressed)
+		{
+			isKeyPressed = true;
+			frameData.u_Toggle = 8;
+
+			if (frameData.u_Toggle != prevToggle)
+				lutToggle = false;
+
+			lutToggle = !lutToggle;
+			app.CurrentScene()->SetColorLUT(coolLut);
+
+			if (lutToggle)
+				frameData.u_RenderFlags = RenderFlags::EnableColorCorrection;
+			else
+				frameData.u_RenderFlags = RenderFlags::None;
+		}
 	}
-	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_0)) {
-		frameData.u_Toggle = 9;
-		app.CurrentScene()->SetColorLUT(weirdLut);
+	else if (glfwGetKey(app.GetWindow(), GLFW_KEY_0))
+	{
+		if (!isKeyPressed)
+		{
+			isKeyPressed = true;
+			frameData.u_Toggle = 9;
+
+			if (frameData.u_Toggle != prevToggle)
+				lutToggle = false;
+
+			app.CurrentScene()->SetColorLUT(weirdLut);
+
+			lutToggle = !lutToggle;
+			if (lutToggle)
+				frameData.u_RenderFlags = RenderFlags::EnableColorCorrection;
+			else
+				frameData.u_RenderFlags = RenderFlags::None;
+		}
 	}
+	else
+	{
+		isKeyPressed = false;
+	}
+
+	prevToggle = frameData.u_Toggle;
+
 
 	_frameUniforms->Update();
 
