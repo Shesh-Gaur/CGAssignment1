@@ -180,6 +180,7 @@ void Application::_Run()
 
 	// Done loading, app is now running!
 	_isRunning = true;
+	float newAngle = 0.0f;
 
 	// Infinite loop as long as the application is running
 	while (_isRunning) {
@@ -222,6 +223,22 @@ void Application::_Run()
 			_RenderScene();
 			_PostRender();
 		}
+
+		if (newAngle < 360.0f)
+			newAngle += dt * 2.0f;
+		else
+			newAngle = 0.0f;
+
+
+		_currentScene->FindObjectByName("Shrub1")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle));
+		_currentScene->FindObjectByName("Shrub2")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 20.0f));
+		_currentScene->FindObjectByName("Shrub3")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 40.0f));
+		_currentScene->FindObjectByName("Shrub4")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 60.0f));
+		_currentScene->FindObjectByName("Shrub5")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 80.0f));
+		_currentScene->FindObjectByName("Shrub6")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 90.0f));
+		_currentScene->FindObjectByName("Shrub7")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 70.0f));
+		_currentScene->FindObjectByName("Shrub8")->SetRotation(glm::vec3(-90.0f, 0.0f, newAngle + 30.0f));
+
 
 		// Store timing for next loop
 		lastFrame = thisFrame;
